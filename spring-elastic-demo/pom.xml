@@ -16,6 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+                <version.jooq>3.13.1</version.jooq>
 	</properties>
 
 	<dependencies>
@@ -27,12 +28,35 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
-<dependency>
-    <groupId>com.googlecode.json-simple</groupId>
-    <artifactId>json-simple</artifactId>
-    <version>1.1.1</version>
-</dependency>
+                <dependency>
+                    <groupId>org.jooq</groupId>
+                    <artifactId>jooq</artifactId>
+                    <version>${version.jooq}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.jooq</groupId>
+                    <artifactId>jooq-meta</artifactId>
+                    <version>${version.jooq}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.jooq</groupId>
+                    <artifactId>jooq-codegen</artifactId>
+                    <version>${version.jooq}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>42.2.11</version>
+                </dependency>
+                
+                <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -48,12 +72,77 @@
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
+           <plugins>
+		<plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                          <groupId>org.jooq</groupId>
+                          <artifactId>jooq-codegen-maven</artifactId>
+                          <version>${version.jooq}</version>
+
+                          <executions>
+                              <execution>
+                                  <goals>
+                                      <goal>generate</goal>
+                                  </goals>
+                              </execution>
+                          </executions>
+
+                          <dependencies>
+                              <dependency>
+                                  <groupId>org.postgresql</groupId>
+                                  <artifactId>postgresql</artifactId>
+                                  <version>42.2.11</version>
+                              </dependency>
+                          </dependencies>
+
+                          <configuration>
+                              <jdbc>
+                                  <driver>${spring.datasource.driver-class-name}</driver>
+                                  <url>${spring.datasource.url}</url>
+                                  <user>${spring.datasource.username}</user>
+                                  <password>${spring.datasource.password}</password>
+                              </jdbc>
+
+                              <generator>
+                                  <database>
+                                      <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                                      <includes>.*</includes>
+                                      <excludes></excludes>
+                                      <inputSchema>public</inputSchema>
+                                  </database>
+                                  <generate>
+                                      <pojos>true</pojos>
+                                  </generate>
+                                  <target>
+                                      <packageName>elfak.teodora.elastic.jooq.model</packageName>
+                                      <directory>src/main/java</directory>
+                                  </target>
+                              </generator>
+                          </configuration>
+              </plugin>
+                      
+              <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>src/main/resources/application.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+	   </plugins>
 	</build>
 
 </project>
