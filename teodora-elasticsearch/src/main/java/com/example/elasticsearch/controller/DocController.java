@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import com.example.elasticsearch.model.Doc;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,13 +26,19 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.apache.commons.io.FilenameUtils;
+
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -42,12 +52,13 @@ public class DocController {
 
     @RequestMapping(value = "/")
     public String UploadPage() {
-        return "uploadview";
+        return "home";
     }
 
     @RequestMapping("/upload")
     public String upload(Model model, @RequestParam("files") MultipartFile[] files) throws IOException, ParseException {
         StringBuilder fileNames = new StringBuilder();
+        ArrayList<Doc> listaDokumenata = new ArrayList<Doc>();
         for (MultipartFile file : files) {
             Path fileNameAndPath = Paths.get(uploadDirectory, file.getOriginalFilename());
             String content = new String(file.getBytes(), StandardCharsets.UTF_8);
@@ -63,7 +74,6 @@ public class DocController {
             String docId = fileNameWithOutExtension + Math.abs(rnd);
             String location = path.replaceAll("\\\\", "/");
             fileNames.append(file.getOriginalFilename() + " ");
-            File convertedFile = this.multipartToFile(file, title);
             if (new File(uploadDirectory, title).exists()) {
                 System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                 String extension = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -74,8 +84,7 @@ public class DocController {
                 System.out.println(title);
             }
             try {
-                final BufferedWriter out = Files.newBufferedWriter(fileNameAndPath,
-                        StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+                Files.write(fileNameAndPath, file.getBytes(), StandardOpenOption.CREATE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -86,15 +95,56 @@ public class DocController {
             Date creationDate = new SimpleDateFormat("dd-MM-yyyy").parse(dateCreated);
             Doc document = new Doc(docId, title, category, content, creationDate, size, location);
             docDAO.addNewDoc(document);
+            listaDokumenata.add(document);
         }
-        model.addAttribute("msg", "Successfully uploaded files " + fileNames.toString());
-        return "uploadstatusview";
+        model.addAttribute("listaDokumenata", listaDokumenata);
+        return "home";
     }
 
-    public static File multipartToFile(MultipartFile multipart, String fileName) throws IllegalStateException, IOException {
-        File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
-        multipart.transferTo(convFile);
-        return convFile;
+    @RequestMapping("/download/{documentId}")
+    public void downloadDocument(@PathVariable String documentId, HttpServletResponse response) {
+        Doc doc = docDAO.getDocById(documentId);
+        String fileName = doc.getTitle();
+        if (fileName.indexOf(".doc") > -1) {
+            response.setContentType("application/msword");
+        }
+        if (fileName.indexOf(".txt") > -1) {
+            response.setContentType("application/txt");
+        }
+        if (fileName.indexOf(".docx") > -1) {
+            response.setContentType("application/msword");
+        }
+        if (fileName.indexOf(".xls") > -1) {
+            response.setContentType("application/vnd.ms-excel");
+        }
+        if (fileName.indexOf(".csv") > -1) {
+            response.setContentType("application/vnd.ms-excel");
+        }
+        if (fileName.indexOf(".ppt") > -1) {
+            response.setContentType("application/ppt");
+        }
+        if (fileName.indexOf(".pdf") > -1) {
+            response.setContentType("application/pdf");
+        }
+        if (fileName.indexOf(".zip") > -1) {
+            response.setContentType("application/zip");
+        }
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        response.setHeader("Content-Transfer-Encoding", "binary");
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
+            FileInputStream fis = new FileInputStream(uploadDirectory + "\\" + fileName);
+            int len;
+            byte[] buf = new byte[1024];
+            while ((len = fis.read(buf)) > 0) {
+                bos.write(buf, 0, len);
+            }
+            bos.close();
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
     }
 
     @RequestMapping("/all")

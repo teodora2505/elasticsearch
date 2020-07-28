@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8"></meta>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></link>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <title>Dodajte fajlove</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Elasticsearch</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav mr-auto">
+                    <a class="nav-item nav-link" href="/" style="color: rgb(255,255,255)">Home</a>
+                    <a class="nav-item nav-link" href="/bookmaker/">Bookmakers</a>
+                    <a class="nav-item nav-link" href="/operator/">Operators</a>
+                    <a class="nav-item nav-link" href="/sport/">Sports</a>
+                    <a class="nav-item nav-link" href="/league/">Leagues</a>
+                    <a class="nav-item nav-link" href="/team/">Teams</a>
+                    <a class="nav-item nav-link" href="/seasoncontrol/">Season Control</a>
+                </div>
+                <ul class="navbar-nav ml-auto">
+                    <a class="nav-item nav-link" href="/index" th:href="@{http://localhost:8081/logout}" th:text="${log}" ></a>
+                </ul>
+            </div>
+        </nav>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="files" th:multiple="true"></input>
+            <input type="submit" value="Upload Files"></input>
+        </form>
+        <div th:if="${listaDokumenata!=null and !listaDokumenata.empty}">
+            <div align="center">
+                <table style="width:70%; margin-top:100px" class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID dokumenta</th>
+                            <th>Naziv dokumenta</th>
+                            <th>Kategorija</th>
+                            <th>Datum kreiranja</th>
+                            <th>Veličina(B)</th>
+                            <th>Sadržaj</th>
+                        </tr>
+                    </thead>
+                    <th:block th:each="dokument : ${listaDokumenata}">
+                        <tr>
+                            <td th:text="${dokument.docId}"></td>
+                            <td th:text="${dokument.title}"></td>
+                            <td th:text="${dokument.category}"></td>
+                            <td th:text="${dokument.creationDate}"></td>
+                            <td th:text="${dokument.size}"></td>
+                            <td class="text-center" th:with="documentId=${dokument.docId}">
+                                <a th:href="@{'/open/' + ${documentId}}" class="btn btn-dark">Pregled</a>
+                                <a th:href="@{'/download/' + ${documentId}}" class="btn btn-dark">Preuzmi</a>
+                            </td>
+                        </tr>
+                    </th:block>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
