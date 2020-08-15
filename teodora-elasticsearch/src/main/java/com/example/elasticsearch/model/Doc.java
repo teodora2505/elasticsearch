@@ -1,9 +1,11 @@
 package com.example.elasticsearch.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import java.util.Date;
+import org.elasticsearch.search.aggregations.support.format.ValueFormat.DateTime;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -16,9 +18,11 @@ public class Doc {
     private String title;
     private String category;
     private String content;
-    @Field(type = FieldType.Date, store = true, format = DateFormat.custom, pattern = "dd-MM-yyyy")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date creationDate = new Date();
+    //@Field(type = FieldType.Date, store = true, format = DateFormat.custom, pattern = "dd-MM-yyyy")
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    //private Date creationDate = new Date();
+    //@Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    private Date creationDate;
     private long size;
     private String location;
 

@@ -3,10 +3,11 @@
     <head>
         <meta charset="UTF-8"></meta>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></link>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <title>Dodajte fajlove</title>
+        <title>Dodavanje dokumenata</title>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -16,26 +17,148 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="/" style="color: rgb(255,255,255)">Home</a>
-                    <a class="nav-item nav-link" href="/bookmaker/">Bookmakers</a>
-                    <a class="nav-item nav-link" href="/operator/">Operators</a>
-                    <a class="nav-item nav-link" href="/sport/">Sports</a>
-                    <a class="nav-item nav-link" href="/league/">Leagues</a>
-                    <a class="nav-item nav-link" href="/team/">Teams</a>
-                    <a class="nav-item nav-link" href="/seasoncontrol/">Season Control</a>
+                    <a class="nav-item nav-link" href="/" style="color: rgb(255,255,255)">Dodavanje dokumenata</a>
+                    <a class="nav-item nav-link" href="/search/1/">Pretraga</a>
+                    <a class="nav-item nav-link" href="/manage/">Upravljanje</a>
                 </div>
-                <ul class="navbar-nav ml-auto">
-                    <a class="nav-item nav-link" href="/index" th:href="@{http://localhost:8081/logout}" th:text="${log}" ></a>
-                </ul>
             </div>
         </nav>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="files" th:multiple="true"></input>
-            <input type="submit" value="Upload Files"></input>
-        </form>
+        <div class="d-flex justify-content-center">
+            <form class="p-3">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal" data-whatever="@mdo">Dodavanje dokumenata</button>
+            </form>
+        </div>
+        <div th:if="${showDocsCount}">
+            <div>
+                <div class="d-flex flex-row bd-highlight mb-3">
+                    <div class="w-25 p-3" style="margin:60px; margin-top:30px; text-align: center">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
+                                <div> <i class="large material-icons">import_contacts</i> </div>
+                                <div>&nbsp;&nbsp;Knjige</div>
+                            </div>
+                            <ul class="list-group list-group-flush" style="list-style-type:none;">
+                                <div style="margin-top: 20px;">
+                                    <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
+                                    <span id="countKnjige" name="${knjige}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                </div>
+                                <a th:href="@{search/1/(searchQuery='',category='knjige',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="w-25 p-3" style="margin:60px; margin-top:30px; text-align: center">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
+                                <div> <i class="large material-icons">book</i> </div>
+                                <div>&nbsp;&nbsp;Radovi</div>
+                            </div>
+                            <ul class="list-group list-group-flush" style="list-style-type:none;">
+                                <div style="margin-top: 20px;">
+                                    <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
+                                    <span id="countRadovi" name="${radovi}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                </div>
+                                <a th:href="@{search/1/(searchQuery='',category='radovi',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                        </div>
+                    </div>
+                    <div class="w-25 p-3" style="margin:60px; margin-top:30px; text-align: center">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
+                                <div> <i class="large material-icons">contact_mail</i> </div>
+                                <div>&nbsp;&nbsp;Zahtevi</div>
+                            </div>
+                            <ul class="list-group list-group-flush" style="list-style-type:none;">
+                                <div style="margin-top: 20px;">
+                                    <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
+                                    <span id="countZahtevi" name="${zahtevi}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                </div>
+                                <a th:href="@{search/1/(searchQuery='',category='zahtevi',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex flex-row bd-highlight mb-3">
+                    <div class="w-25 p-3" style="margin:60px; margin-top:10px; text-align: center">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
+                                <div> <i class="large material-icons">event_note</i> </div>
+                                <div>&nbsp;&nbsp;Rešenja</div>
+                            </div>
+                            <ul class="list-group list-group-flush" style="list-style-type:none;">
+                                <div style="margin-top: 20px;">
+                                    <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
+                                    <span id="countResenja" name="${resenja}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                </div>
+                                <a th:href="@{search/1/(searchQuery='',category='resenja',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                        </div>
+                    </div>
+                    <div class="w-25 p-3" style="margin:60px; margin-top:10px; text-align: center">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
+                                <div> <i class="large material-icons">drafts</i> </div>
+                                <div>&nbsp;&nbsp;Molbe</div>
+                            </div>
+                            <ul class="list-group list-group-flush" style="list-style-type:none;">
+                                <div style="margin-top: 20px;">
+                                    <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
+                                    <span id="countMolbe" name="${molbe}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                </div>
+                                <a th:href="@{search/1/(searchQuery='',category='molbe',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                        </div>
+                    </div>
+                    <div class="w-25 p-3" style="margin:60px; margin-top:10px; text-align: center">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
+                                <div> <i class="large material-icons">layers</i> </div>
+                                <div>&nbsp;&nbsp;Ostalo</div>
+                            </div>
+                            <ul class="list-group list-group-flush" style="list-style-type:none;">
+                                <div style="margin-top: 20px;">
+                                    <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
+                                    <span id="countOstalo" name="${ostalo}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                </div>
+                                <a th:href="@{search/1/(searchQuery='',category='ostalo',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title" id="exampleModalLabel">Dodavanje dokumenata</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/upload" method="post" enctype="multipart/form-data">
+                            <div class="form-group row">
+                                <div class="col-sm-10">
+                                    <input type="file" name="files" th:multiple="true" th:required="required"></input>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm font-weight-normal">Kategorija</label>
+                                <div class="col-sm-10">
+                                    <select name="category" class="form-control">
+                                        <option th:each="category : ${categories}" th:value="${category.name}" th:text="${category.name}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-primary" value="Dodaj"/>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Odustani</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div th:if="${listaDokumenata!=null and !listaDokumenata.empty}">
             <div align="center">
-                <table style="width:70%; margin-top:100px" class="table table-bordered table-striped">
+                <table style="width:80%; margin-top:100px" class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
                             <th>ID dokumenta</th>
@@ -54,13 +177,76 @@
                             <td th:text="${dokument.creationDate}"></td>
                             <td th:text="${dokument.size}"></td>
                             <td class="text-center" th:with="documentId=${dokument.docId}">
-                                <a th:href="@{'/open/' + ${documentId}}" class="btn btn-dark">Pregled</a>
-                                <a th:href="@{'/download/' + ${documentId}}" class="btn btn-dark">Preuzmi</a>
+                                <a th:href="@{'/download/' + ${documentId}}" class="btn btn-info">Otvori/Preuzmi</a>
                             </td>
                         </tr>
                     </th:block>
                 </table>
             </div>
         </div>
+        <script>
+            $('#addModal').on('hidden.bs.modal', function (e) {
+                $(this)
+                        .find("input[type=file]")
+                        .val('')
+                        .end()
+                        .find("select")
+                        .val('knjige')
+                        .end();
+            });
+        </script>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            var knjige = /*[[${knjige}]]*/ 'default';
+            var radovi = /*[[${radovi}]]*/ 'default';
+            var zahtevi = /*[[${zahtevi}]]*/ 'default';
+            var resenja = /*[[${resenja}]]*/ 'default';
+            var molbe = /*[[${molbe}]]*/ 'default';
+            var ostalo = /*[[${ostalo}]]*/ 'default';
+            console.log(knjige);
+            console.log(radovi);
+            console.log(zahtevi);
+            console.log(resenja);
+            console.log(molbe);
+            console.log(ostalo);
+            document.addEventListener("DOMContentLoaded", () => {
+                function counter(id, start, end, duration) {
+                    let obj = document.getElementById(id),
+                            current = start,
+                            range = end - start,
+                            increment = end > start ? 1 : -1,
+                            step = Math.abs(Math.floor(duration / range)),
+                            timer = setInterval(() => {
+                                current += increment;
+                                obj.textContent = current;
+                                if (current == end) {
+                                    clearInterval(timer);
+                                }
+                            }, step);
+                }
+                if (knjige > 0) {
+                    counter("countKnjige", 0, knjige, 3000);
+                }
+                if (radovi > 0) {
+                    counter("countRadovi", 0, radovi, 3000);
+                }
+                if (zahtevi > 0) {
+                    counter("countZahtevi", 0, zahtevi, 3000);
+                }
+                if (resenja > 0) {
+                    counter("countResenja", 0, resenja, 3000);
+                }
+                if (molbe > 0) {
+                    counter("countMolbe", 0, molbe, 3000);
+                }
+                if (ostalo > 0) {
+                    counter("countOstalo", 0, ostalo, 3000);
+                }
+            });
+
+
+            /*]]>*/
+        </script>
     </body>
 </html>

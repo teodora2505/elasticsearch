@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8"></meta>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></link>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <title>Upravljanje dokumentima</title>
+        <style>
+            .pagination {
+                display: inline-block;
+            }
+
+            .pagination a {
+                color: black;
+                float: left;
+                padding: 8px 16px;
+                text-decoration: none;
+            }
+
+            .pagination a.active {
+                background-color: #4CAF50;
+                color: white;
+                border-radius: 5px;
+            }
+
+            .pagination a:hover:not(.active) {
+                background-color: #ddd;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Elasticsearch</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav mr-auto">
+                    <a class="nav-item nav-link" href="/" >Dodavanje dokumenata</a>
+                    <a class="nav-item nav-link" href="/search/1/">Pretraga</a>
+                    <a class="nav-item nav-link" href="/manage/" style="color: rgb(255,255,255)">Upravljanje</a>
+                </div>
+            </div>
+        </nav>
+        <div align="right" class="mt-5 mr-5">
+            <a th:href="@{'/deleteAll/'}" class="btn btn-danger">Obriši sve dokumente</a>
+        </div>
+        <div align="center" th:if="${listaDokumenata!=null and !listaDokumenata.empty and listaDokumenata.size() > 1}">
+            <form>
+                <div class="form-group col-md-6">
+                    <div class="form-row d-flex justify-content-center">
+                        <div class="col-md-6" >
+                            <label>Sortitaj dokumente po:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <select name="sort" class="form-control">
+                                <option th:each="sort : ${sorts}" th:value="${sort.value}" th:text="${sort.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Sortiraj</button>
+            </form>
+        </div>
+        <div style="margin-top: 100px;" align="center" th:if="${listaDokumenata!=null and !listaDokumenata.empty}">
+            <form>
+                <div class="form-ro d-flex justify-content-center">
+                    <div class="col-md-6">
+                        <input type="text" name="docTitle" class="form-control" placeholder="Unesite naziv dokumenta"/>
+                    </div>
+                    <div class="col-md-4" align="left">
+                        <button type="submit" class="btn btn-primary">Pronađi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div align="center">
+            <div  th:if="${listaDokumenata!=null and !listaDokumenata.empty}" style="margin-top: 10px; width:80%; height:800px; overflow: scroll;" >
+                <table align-self="center" class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID dokumenta</th>
+                            <th>Naziv dokumenta</th>
+                            <th>Kategorija</th>
+                            <th>Datum kreiranja</th>
+                            <th>Veličina(B)</th>
+                            <th>Obriši</th>
+                            <th>Sadržaj</th>
+                        </tr>
+                    </thead>
+                    <th:block th:each="dokument : ${listaDokumenata}">
+                        <tr>
+                            <td th:text="${dokument.docId}"></td>
+                            <td th:text="${dokument.title}"></td>
+                            <td th:text="${dokument.category}"></td>
+                            <td th:text="${dokument.creationDate}"></td>
+                            <td th:text="${dokument.size}"></td>
+                            <td class="text-center" th:with="documentId=${dokument.docId}">
+                                <a th:href="@{'/delete/' + ${documentId}}" class="btn btn-danger">Obriši</a>
+                            </td>
+                            <td class="text-center" th:with="documentId=${dokument.docId}">
+                                <a th:href="@{'/download/' + ${documentId}}" class="btn btn-info">Otvori/Preuzmi</a>
+                            </td>
+                        </tr>
+                    </th:block>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
