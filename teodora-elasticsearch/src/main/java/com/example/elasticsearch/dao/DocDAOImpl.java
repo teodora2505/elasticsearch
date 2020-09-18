@@ -138,26 +138,6 @@ public class DocDAOImpl implements DocDAO {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         SortOrder order = (ASCorDESC) ? SortOrder.ASC : SortOrder.DESC;
 
-//        if (searchQuery != null && (searchContent || searchTitle || searchId)) {
-//            if (searchContent && searchTitle && searchId) {
-//                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"))
-//                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-//            } else if (searchContent && searchTitle && !searchId) {
-//                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"));
-//            } else if (searchContent && searchId && !searchTitle) {
-//                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"))
-//                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-//            } else if (searchTitle && searchId && !searchContent) {
-//                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"))
-//                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-//            } else if (searchContent && !searchTitle && !searchId) {
-//                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"));
-//            } else if (searchTitle && !searchContent && !searchId) {
-//                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"));
-//            } else if (searchId && !searchContent && !searchTitle) {
-//                boolQuery.should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-//            }
-//        }
         if (searchQuery != null && (searchContent || searchTitle || searchId)) {
             if (searchContent && searchTitle && searchId) {
                 boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"))

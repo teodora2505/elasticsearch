@@ -42,6 +42,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import java.util.List;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+
+import java.io.File;
+import java.io.IOException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.text.PDFTextStripperByArea;
 
 @Controller
 public class DocController {
@@ -66,6 +75,24 @@ public class DocController {
         return "home";
     }
 
+    public String readDocxFile(String filepathabs) {
+        try {
+            FileInputStream fis = new FileInputStream(filepathabs);
+            XWPFDocument document = new XWPFDocument(fis);
+            List<XWPFParagraph> paragraphs = document.getParagraphs();
+            String content = "";
+            for (XWPFParagraph para : paragraphs) {
+                content += para.getText();
+                System.out.println(para.getText());
+            }
+            fis.close();
+            return content;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @RequestMapping("/upload")
     public String upload(Model model, @RequestParam("files") MultipartFile[] files, @RequestParam("category") String selectedCategory) throws IOException, ParseException {
         model.addAttribute("categories", dodajKategorije());
@@ -74,7 +101,10 @@ public class DocController {
         ArrayList<Doc> listaDokumenata = new ArrayList<Doc>();
         for (MultipartFile file : files) {
             Path fileNameAndPath = Paths.get(uploadDirectory, file.getOriginalFilename());
-            String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+            String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+            String content = null;
+            System.out.println(ext);
+            content = new String(file.getBytes(), StandardCharsets.UTF_8);
             String title = file.getOriginalFilename();
             long size = file.getSize();
             String fileNameWithOutExtension = FilenameUtils.removeExtension(title);
@@ -88,7 +118,7 @@ public class DocController {
             //System.out.println(rnd);
             String location = path.replaceAll("\\\\", "/");
             fileNames.append(file.getOriginalFilename() + " ");
-            // u slucaju da postoji kopija, rename-uj je :)
+            // u slucaju da postoji kopija, rename-uj je 🙂
             if (new File(uploadDirectory, title).exists()) {
                 String extension = FilenameUtils.getExtension(file.getOriginalFilename());
                 title = fileNameWithOutExtension + '(' + ((int) (Math.random() * 100)) + ")." + extension;
@@ -111,17 +141,34 @@ public class DocController {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, -2);
             Date yesterday = calendar.getTime();
+            if (ext.equals("docx")) {
+                content = readDocxFile(fileNameAndPath.toString());
+            } else if (ext.equals("pdf")) {
+                content = getPdfContent(fileNameAndPath.toString());
+            }
             Doc document = new Doc(docId, title, category, content, creationDate, size, location);
             docDAO.addNewDoc(document);
             listaDokumenata.add(document);
         }
         ArrayList<DocDTO> docs = new ArrayList<>();
-         for (Doc doc : listaDokumenata) {
+        for (Doc doc : listaDokumenata) {
             String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
             docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
-         }
+        }
         model.addAttribute("listaDokumenata", docs);
         return "home";
+    }
+
+    public String getPdfContent(String abspath) throws IOException {
+        PDDocument document = PDDocument.load(new File(abspath));
+        String text = null;
+        if (!document.isEncrypted()) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            text = stripper.getText(document);
+            return text;
+        }
+        document.close();
+        return text;
     }
 
     @RequestMapping("/download/{documentId}")
@@ -251,30 +298,48 @@ public class DocController {
             maxSize = paramMaxSize.isPresent() ? Long.valueOf(paramMaxSize.get()) : Long.valueOf(15360);
             minDate = paramMinDate.isPresent() && !paramMinDate.get().equals("") ? sdf.parse(paramMinDate.get()) : null;
             maxDate = paramMaxDate.isPresent() && !paramMaxDate.get().equals("") ? sdf.parse(paramMaxDate.get()) : null;
-            if(paramSort.isPresent()&& 1 <= paramSort.get() && paramSort.get() <=6){
-                switch(paramSort.get()){
-                    case 1: sortField = "size"; sortASCorDESC = true; //size ASC
+            if (paramSort.isPresent() && 1 <= paramSort.get() && paramSort.get() <= 6) {
+                switch (paramSort.get()) {
+                    case 1:
+                        sortField = "size";
+                        sortASCorDESC = true; //size ASC
                         break;
-                    case 2: sortField = "size"; sortASCorDESC = false; //size DESC
+                    case 2:
+                        sortField = "size";
+                        sortASCorDESC = false; //size DESC
                         break;
-                    case 3: sortField = "creationDate"; sortASCorDESC = true; //creationDate ASC
+                    case 3:
+                        sortField = "creationDate";
+                        sortASCorDESC = true; //creationDate ASC
                         break;
-                    case 4: sortField = "creationDate"; sortASCorDESC = false; //creationDate DESC
+                    case 4:
+                        sortField = "creationDate";
+                        sortASCorDESC = false; //creationDate DESC
                         break;
-                    case 5: sortField = "category"; sortASCorDESC = true; //category ASC
+                    case 5:
+                        sortField = "category";
+                        sortASCorDESC = true; //category ASC
                         break;
-                    case 6: sortField = "category"; sortASCorDESC = false; //category DESC
+                    case 6:
+                        sortField = "category";
+                        sortASCorDESC = false; //category DESC
                         break;
-                    default: sortField = ""; sortASCorDESC = false; break;
+                    default:
+                        sortField = "";
+                        sortASCorDESC = false;
+                        break;
                 }
-            } else { sortField = ""; sortASCorDESC = false; }
+            } else {
+                sortField = "";
+                sortASCorDESC = false;
+            }
 
-            if(minSize > maxSize){
+            if (minSize > maxSize) {
                 poruka = "Filteri za veličinu dokumenata su neadekvatni. Pokušajte ponovo.";
                 prikaziPoruku = true;
                 model.addAttribute("poruka", poruka);
             }
-            if(minDate!= null && maxDate != null && minDate.after(maxDate)){
+            if (minDate != null && maxDate != null && minDate.after(maxDate)) {
                 poruka = "Filteri za datum su neadekvatni. Pokušajte ponovo.";
                 prikaziPoruku = true;
                 model.addAttribute("poruka", poruka);
@@ -302,7 +367,7 @@ public class DocController {
                 urlQueryParams += "maxSize=&";
             }
             urlQueryParams += "minDate=" + paramMinDate.get() + "&";
-            urlQueryParams += "maxDate=" + paramMaxDate.get()+ "&";
+            urlQueryParams += "maxDate=" + paramMaxDate.get() + "&";
             urlQueryParams += "sort=" + paramSort.get();
 
             model = this.setModelParamAttributesForSearchPage(model, paramSearchQuery, paramSearchContent, paramSearchTitle, paramSearchId,
@@ -313,7 +378,7 @@ public class DocController {
             documentsFromPage = pageWithDocuments.getContent();
 
             int totalNumberOfFilteredDocs = docDAO.getTotalNumberOfFilteredDocs(searchQuery, searchContent, searchTitle, searchId,
-                        category, minSize, maxSize, minDate, maxDate, sortField, sortASCorDESC);
+                    category, minSize, maxSize, minDate, maxDate, sortField, sortASCorDESC);
 
             if (totalNumberOfFilteredDocs % 10 == 0) {
                 totalPages = totalNumberOfFilteredDocs / DOCUMENTS_PER_PAGE;
@@ -350,13 +415,13 @@ public class DocController {
         } else {
             model.addAttribute("nextRange", -1);
         }
-         ArrayList<DocDTO> docsFromPage = new ArrayList<>();
-         for (Doc doc : documentsFromPage) {
+        ArrayList<DocDTO> docsFromPage = new ArrayList<>();
+        for (Doc doc : documentsFromPage) {
             String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
             docsFromPage.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
-         }
+        }
         model.addAttribute("listaDokumenata", docsFromPage);
-        if(docsFromPage.size() == 0 && poruka == ""){
+        if (docsFromPage.size() == 0 && poruka == "") {
             poruka = "Nema dokumenata za prikaz.";
             model.addAttribute("poruka", poruka);
             prikaziPoruku = true;
@@ -402,55 +467,59 @@ public class DocController {
         }
         model.addAttribute("sorts", this.dodajSortiranja());
         model.addAttribute("listaDokumenata", null);
-       return "redirect:/manage";
+        return "redirect:/manage";
     }
 
-
-
     @RequestMapping("/manage")
-    public String manageDocs(Model model, @RequestParam("sort") Optional<Integer> sort
-    , @RequestParam("docTitle") Optional<String> docTitle) throws ParseException {
+    public String manageDocs(Model model, @RequestParam("sort") Optional<Integer> sort,
+            @RequestParam("docTitle") Optional<String> docTitle) throws ParseException {
         model.addAttribute("sorts", this.dodajSortiranja());
         List<Doc> documentsAll = null;
         ArrayList<DocDTO> docs = new ArrayList<>();
-        if(sort.isPresent() && 1 <= sort.get() && sort.get() <=6){
-            switch(sort.get()){
-                case 1: documentsAll = docDAO.sortDocsBy("size", true); //size ASC
+        if (sort.isPresent() && 1 <= sort.get() && sort.get() <= 6) {
+            switch (sort.get()) {
+                case 1:
+                    documentsAll = docDAO.sortDocsBy("size", true); //size ASC
                     break;
-                case 2: documentsAll = docDAO.sortDocsBy("size", false); //size DESC
+                case 2:
+                    documentsAll = docDAO.sortDocsBy("size", false); //size DESC
                     break;
-                case 3: documentsAll = docDAO.sortDocsBy("creationDate", true); //creationDate ASC
+                case 3:
+                    documentsAll = docDAO.sortDocsBy("creationDate", true); //creationDate ASC
                     break;
-                case 4: documentsAll = docDAO.sortDocsBy("creationDate", false); //creationDate DESC
+                case 4:
+                    documentsAll = docDAO.sortDocsBy("creationDate", false); //creationDate DESC
                     break;
-                case 5: documentsAll = docDAO.sortDocsBy("category", true); //category ASC
+                case 5:
+                    documentsAll = docDAO.sortDocsBy("category", true); //category ASC
                     break;
-                case 6: documentsAll = docDAO.sortDocsBy("category", true); //category DESC
+                case 6:
+                    documentsAll = docDAO.sortDocsBy("category", true); //category DESC
                     break;
-                default: break;
+                default:
+                    break;
             }
             for (Doc doc : documentsAll) {
-            String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
-            docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
+                String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
+                docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
             }
         } else if (docTitle.isPresent() && !docTitle.get().equals("")) {
             documentsAll = new ArrayList<Doc>();
             System.out.println(docTitle.get());
             Doc foundDoc = docDAO.getDocByTitle(docTitle.get().replaceAll("\\+", " "));
-            if(foundDoc != null) {
+            if (foundDoc != null) {
                 documentsAll.add(foundDoc);
                 String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(foundDoc.getCreationDate());
                 docs.add(new DocDTO(foundDoc.getDocId(), foundDoc.getTitle(), foundDoc.getCategory(), formattedDate, foundDoc.getSize()));
             } else {
                 documentsAll = null;
             }
-        }
-        else {
+        } else {
             documentsAll = docDAO.getAllDocs();
             for (Doc doc : documentsAll) {
-            String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
-            docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
-        }
+                String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
+                docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
+            }
         }
         model.addAttribute("listaDokumenata", docs);
         return "manage";
@@ -477,43 +546,42 @@ public class DocController {
         return "home";
     }
 
-    public Model setModelParamAttributesForSearchPage(Model model, Optional<String> paramSearchQuery, Optional<String>  paramSearchContent, Optional<String>  paramSearchTitle,
-            Optional<String>  paramSearchId, Optional<String> paramCategory, String category, Optional<Integer> paramMinSize, Optional<Integer> paramMaxSize,
-            Optional<String> paramMinDate,Optional<String> paramMaxDate, Optional<Integer>paramSort){
+    public Model setModelParamAttributesForSearchPage(Model model, Optional<String> paramSearchQuery, Optional<String> paramSearchContent, Optional<String> paramSearchTitle,
+            Optional<String> paramSearchId, Optional<String> paramCategory, String category, Optional<Integer> paramMinSize, Optional<Integer> paramMaxSize,
+            Optional<String> paramMinDate, Optional<String> paramMaxDate, Optional<Integer> paramSort) {
 
-         if(paramSearchQuery.isPresent()) {
-                 model.addAttribute("searchQuery", paramSearchQuery.get());
-            }
-            if(paramSearchContent.isPresent()){
-                model.addAttribute("searchContent", true);
-            }
-            if(paramSearchTitle.isPresent()){
-                model.addAttribute("searchTitle", true);
-            }
-            if(paramSearchId.isPresent()){
-                model.addAttribute("searchId", true);
-            }
-            if(paramCategory.isPresent()){
-                model.addAttribute("category", category);
-            }
-            if(paramMinSize.isPresent()){
-                 model.addAttribute("minSize", paramMinSize.get());
-            }
-            if(paramMaxSize.isPresent()){
-                model.addAttribute("maxSize", paramMaxSize.get());
-            }
-            if(paramMinDate.isPresent()){
-                 model.addAttribute("minDate", paramMinDate.get());
-            }
-            if(paramMaxDate.isPresent()){
-                model.addAttribute("maxDate", paramMaxDate.get());
-            }
-            if(paramSort.isPresent()){
-                model.addAttribute("sort", paramSort.get());
-            }
-
-            return model;
+        if (paramSearchQuery.isPresent()) {
+            model.addAttribute("searchQuery", paramSearchQuery.get());
         }
+        if (paramSearchContent.isPresent()) {
+            model.addAttribute("searchContent", true);
+        }
+        if (paramSearchTitle.isPresent()) {
+            model.addAttribute("searchTitle", true);
+        }
+        if (paramSearchId.isPresent()) {
+            model.addAttribute("searchId", true);
+        }
+        if (paramCategory.isPresent()) {
+            model.addAttribute("category", category);
+        }
+        if (paramMinSize.isPresent()) {
+            model.addAttribute("minSize", paramMinSize.get());
+        }
+        if (paramMaxSize.isPresent()) {
+            model.addAttribute("maxSize", paramMaxSize.get());
+        }
+        if (paramMinDate.isPresent()) {
+            model.addAttribute("minDate", paramMinDate.get());
+        }
+        if (paramMaxDate.isPresent()) {
+            model.addAttribute("maxDate", paramMaxDate.get());
+        }
+        if (paramSort.isPresent()) {
+            model.addAttribute("sort", paramSort.get());
+        }
+        return model;
+    }
 
     public ArrayList<Category> dodajKategorije() {
         ArrayList<Category> kategorije = new ArrayList<Category>();
@@ -549,7 +617,7 @@ public class DocController {
         return sortiranja;
     }
 
-     public ArrayList<Category> dodajSortiranjaZaSearchStranu() {
+    public ArrayList<Category> dodajSortiranjaZaSearchStranu() {
         ArrayList<Category> sortiranja = new ArrayList<Category>();
         sortiranja.add(new Category(0, "nesortirani prikaz"));
         sortiranja.add(new Category(1, "veličini dokumenta - rastuće"));
