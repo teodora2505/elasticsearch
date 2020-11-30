@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head>
         <meta charset="UTF-8"></meta>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></link>
@@ -42,6 +43,9 @@
                     <a class="nav-item nav-link" href="/" >Dodavanje dokumenata</a>
                     <a class="nav-item nav-link" href="/search/1/">Pretraga</a>
                     <a class="nav-item nav-link" href="/manage/" style="color: rgb(255,255,255)">Upravljanje</a>
+                    <ul class="navbar-nav mr-auto">
+                        <li sec:authorize="isAuthenticated()"><a class="nav-item nav-link" th:href="@{/logout}">Odjavi se</a></li>
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -109,5 +113,9 @@
                 </table>
             </div>
         </div>
+        <script type="text/javascript"
+        th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
+        <script type="text/javascript"
+        th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
     </body>
 </html>

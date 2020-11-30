@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head>
         <meta charset="UTF-8"></meta>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></link>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -19,13 +23,16 @@
                 <div class="navbar-nav mr-auto">
                     <a class="nav-item nav-link" href="/" style="color: rgb(255,255,255)">Dodavanje dokumenata</a>
                     <a class="nav-item nav-link" href="/search/1/">Pretraga</a>
-                    <a class="nav-item nav-link" href="/manage/">Upravljanje</a>
+                    <a th:if="${adminLogged}" class="nav-item nav-link" href="/manage/">Upravljanje</a>
+                    <ul class="navbar-nav mr-auto">
+                        <li sec:authorize="isAuthenticated()"><a class="nav-item nav-link" th:href="@{/logout}">Odjavi se</a></li>
+                    </ul>
                 </div>
             </div>
         </nav>
 
 
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center" th:if="${adminLogged}">
             <form class="p-3">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal" data-whatever="@mdo">Dodavanje dokumenata</button>
             </form>
@@ -250,5 +257,9 @@
 
             /*]]>*/
         </script>
+        <script type="text/javascript"
+        th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
+        <script type="text/javascript"
+        th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
     </body>
 </html>
