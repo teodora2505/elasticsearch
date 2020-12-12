@@ -1,0 +1,5 @@
+U današnje je vrijeme vrlo teško doći do pravih informacija, obraditi ih i iskoristiti na pravi način. Postoje razni programi koji nam pomažu kod rada sa informacijama. Ti su programi
+inteligentni softverski agenti.
+Inteligentni softverski agenti imaju takve osobine i mogućnosti da se smatraju novim pomakom u informacijskoj znanosti. Koriste se širom svijeta, kako u akademskim zajednicama tako i u poslovnim krugovima kod donošenja bitnih poslovnih odluka.
+Područje inteligentnih softverskih agenata je vrlo mlado. Istraživanja ovog područja mogu se podijeliti na razvijanje teorije o agentima, na razvijanje arhitekture agenata i na razvijanje agent orijentiranih jezika. Unatoč preprekama koje postoje, inteligentni softverski agenti predstavljaju izazov jer prednosti koje nude premašuju poteškoće koje stoje na putu njihove praktične primjene.
+Što su zapravo agenti, koje su vrste agenata, koje su im osobine, koje su im prednosti i nedostaci? Ovo su pitanja na koja ćemo pokušati dati odgovor.

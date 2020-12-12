@@ -1,0 +1,4 @@
+Touchscreen - ovi, ili ekrani osjeljivi na dodir, su kao što im i samo ime govori, uređaji koji reagiraju na dodir. To su ekrani pomoću kojih se dodirom može upravljati raznim drugim uređajima, a najčešće računalima. Na ekranu je prikazan izbornik funkcija koje ekran može "pokrenuti" na računalu. Samo je po sebi jasno da ovakvi uređaji imaju veliku primjenjivost, tj. primjenjivi su u raznim područjima ljudske djelatnosti. Ekrani koji reagiraju na dodir ukidaju potrebu korištenja posebnog uređaja za unos podataka u sustavima u kojima se koriste. Oni objedinjuju funkcionalnost ulaznih u izlaznih uređaja, služe za prikaz izlaznih podataka, tj. rezultata, a istovremeno omogućuju unos podataka i manipulaciju njima. U današnjici postoje različite tehnološke implementacije ekrana koji reagiraju na dodir, a osnovne i najčešće korištene su:
+• otpornički ekrani osjetljivi na dodir
+• kapacitivni ekrani osjetljivi na dodir
+• ekrani koji koriste površinske akustične valove

@@ -11,6 +11,7 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
         <title>Dodavanje dokumenata</title>
     </head>
     <body>
@@ -31,12 +32,35 @@
             </div>
         </nav>
 
+        <div id="carouselHomePage" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner" >
+
+                <div class="carousel-item active"  data-interval="500">
+                    <img src="https://www.scylladb.com/wp-content/uploads/800x400-blog-elasticsearchscylla.jpg" alt= "slika1" class="d-block w-100" style="width:640px; height: 550px"></img>
+                </div>
+                <div class="carousel-item"  data-interval="500">
+                    <img src="https://extensionscdn.joomla.org/cache/fab_image/58d4e42a3aa62_resizeDown400px175px16.jpg" alt="slika2" class="d-block w-100" style="width:640px; height: 550px"></img>
+
+                </div>
+                <div class="carousel-item " data-interval="500">
+                    <img src="https://www.scylladb.com/wp-content/uploads/800x400-blog-elasticsearchscylla.jpg" alt="slika3" class="d-block w-100" style="width:640px; height: 550px"></img>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
 
         <div class="d-flex justify-content-center" th:if="${adminLogged}">
             <form class="p-3">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal" data-whatever="@mdo">Dodavanje dokumenata</button>
             </form>
         </div>
+
+
+
         <div th:if="${showDocsCount}">
             <div>
                 <div class="d-flex flex-row bd-highlight mb-3">
