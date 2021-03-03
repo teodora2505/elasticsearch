@@ -12,6 +12,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
@@ -21,6 +23,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,12 +87,12 @@ public class MainController {
             model.addAttribute("adminLogged", true);
         }
         model.addAttribute("categories", dodajKategorije());
-        model.addAttribute("knjige", docDAO.getNumberOfDocsByCategory("knjige"));
-        model.addAttribute("radovi", docDAO.getNumberOfDocsByCategory("radovi"));
-        model.addAttribute("zahtevi", docDAO.getNumberOfDocsByCategory("zahtevi"));
-        model.addAttribute("resenja", docDAO.getNumberOfDocsByCategory("resenja"));
-        model.addAttribute("molbe", docDAO.getNumberOfDocsByCategory("molbe"));
-        model.addAttribute("ostalo", docDAO.getNumberOfDocsByCategory("ostalo"));
+        model.addAttribute("c1", docDAO.getNumberOfDocsByCategory("knjige"));
+        model.addAttribute("c2", docDAO.getNumberOfDocsByCategory("laboratorijske"));
+        model.addAttribute("c3", docDAO.getNumberOfDocsByCategory("blanketi"));
+        model.addAttribute("c4", docDAO.getNumberOfDocsByCategory("seminarski"));
+        model.addAttribute("c5", docDAO.getNumberOfDocsByCategory("diplomski"));
+        model.addAttribute("c6", docDAO.getNumberOfDocsByCategory("master"));
         model.addAttribute("showDocsCount", true);
         return "home";
     }
@@ -172,7 +175,7 @@ public class MainController {
         ArrayList<DocDTO> docs = new ArrayList<>();
         for (Doc doc : listaDokumenata) {
             String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
-            docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
+            docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, String.format("%.2f", ((double)doc.getSize()/1024)).toString()));
         }
         model.addAttribute("listaDokumenata", docs);
         return "home";
@@ -261,6 +264,7 @@ public class MainController {
             @RequestParam("searchContent") Optional<String> paramSearchContent,
             @RequestParam("searchTitle") Optional<String> paramSearchTitle,
             @RequestParam("searchId") Optional<String> paramSearchId,
+            @RequestParam("type") Optional<String> paramType,
             @RequestParam("category") Optional<String> paramCategory,
             @RequestParam("minSize") Optional<Integer> paramMinSize,
             @RequestParam("maxSize") Optional<Integer> paramMaxSize,
@@ -272,12 +276,14 @@ public class MainController {
         if(userService.findByEmail(request.getUserPrincipal().getName()).getRoles().contains(adminRole)){
             model.addAttribute("adminLogged", true);
         }
+        model.addAttribute("types", this.dodajTipovePretrageZaSearchStranu());
         model.addAttribute("categories", this.dodajKategorijeZaSearchStranu());
         model.addAttribute("sorts", this.dodajSortiranjaZaSearchStranu());
         String searchQuery = null;
         boolean searchContent = false;
         boolean searchTitle = false;
         boolean searchId = false;
+        String type = null;
         String category = null;
         long minSize = new Integer(0).longValue();
         long maxSize = new Integer(15360).longValue();
@@ -296,6 +302,7 @@ public class MainController {
                 && !paramSearchContent.isPresent()
                 && !paramSearchTitle.isPresent()
                 && !paramSearchId.isPresent()
+                && !paramType.isPresent()
                 && !paramCategory.isPresent()
                 && !paramMinSize.isPresent()
                 && !paramMaxSize.isPresent()
@@ -316,6 +323,7 @@ public class MainController {
             searchContent = paramSearchContent.isPresent();
             searchTitle = paramSearchTitle.isPresent();
             searchId = paramSearchId.isPresent();
+            type = paramType.isPresent() && !paramType.get().equals("") ? paramType.get() : null;
             category = paramCategory.isPresent() && !paramCategory.get().equals("") ? paramCategory.get() : null;
             minSize = paramMinSize.isPresent() ? Long.valueOf(paramMinSize.get()) : Long.valueOf(0);
             maxSize = paramMaxSize.isPresent() ? Long.valueOf(paramMaxSize.get()) : Long.valueOf(15360);
@@ -378,6 +386,7 @@ public class MainController {
             if (searchId) {
                 urlQueryParams += "searchId=on" + "&";
             }
+            urlQueryParams += "type=" + paramType.get() + "&";
             urlQueryParams += "category=" + paramCategory.get() + "&";
             if (paramMinSize.isPresent()) {
                 urlQueryParams += "minSize=" + paramMinSize.get() + "&";
@@ -394,14 +403,13 @@ public class MainController {
             urlQueryParams += "sort=" + paramSort.get();
 
             model = this.setModelParamAttributesForSearchPage(model, paramSearchQuery, paramSearchContent, paramSearchTitle, paramSearchId,
-                    paramCategory, category, paramMinSize, paramMaxSize, paramMinDate, paramMaxDate, paramSort);
-
+                    paramType, type, paramCategory, category, paramMinSize, paramMaxSize, paramMinDate, paramMaxDate, paramSort);
             pageWithDocuments = docDAO.getPageOfFilteredDocs(page - 1, DOCUMENTS_PER_PAGE, searchQuery, searchContent, searchTitle,
-                    searchId, category, minSize, maxSize, minDate, maxDate, sortField, sortASCorDESC);
+                    searchId, type, category, minSize, maxSize, minDate, maxDate, sortField, sortASCorDESC);
             documentsFromPage = pageWithDocuments.getContent();
 
             int totalNumberOfFilteredDocs = docDAO.getTotalNumberOfFilteredDocs(searchQuery, searchContent, searchTitle, searchId,
-                    category, minSize, maxSize, minDate, maxDate, sortField, sortASCorDESC);
+                    type, category, minSize, maxSize, minDate, maxDate, sortField, sortASCorDESC);
 
             if (totalNumberOfFilteredDocs % 10 == 0) {
                 totalPages = totalNumberOfFilteredDocs / DOCUMENTS_PER_PAGE;
@@ -441,7 +449,7 @@ public class MainController {
         ArrayList<DocDTO> docsFromPage = new ArrayList<>();
         for (Doc doc : documentsFromPage) {
             String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
-            docsFromPage.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
+            docsFromPage.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, String.format("%.2f", ((double)doc.getSize()/1024)).toString()));
         }
         model.addAttribute("listaDokumenata", docsFromPage);
         if (docsFromPage.size() == 0 && poruka == "") {
@@ -524,7 +532,7 @@ public class MainController {
             }
             for (Doc doc : documentsAll) {
                 String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
-                docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
+                docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate,  String.format("%.2f", ((double)doc.getSize()/1024)).toString()));
             }
         } else if (docTitle.isPresent() && !docTitle.get().equals("")) {
             documentsAll = new ArrayList<Doc>();
@@ -533,7 +541,7 @@ public class MainController {
             if (foundDoc != null) {
                 documentsAll.add(foundDoc);
                 String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(foundDoc.getCreationDate());
-                docs.add(new DocDTO(foundDoc.getDocId(), foundDoc.getTitle(), foundDoc.getCategory(), formattedDate, foundDoc.getSize()));
+                docs.add(new DocDTO(foundDoc.getDocId(), foundDoc.getTitle(), foundDoc.getCategory(), formattedDate,  String.format("%.2f", ((double)foundDoc.getSize()/1024)).toString()));
             } else {
                 documentsAll = null;
             }
@@ -541,7 +549,7 @@ public class MainController {
             documentsAll = docDAO.getAllDocs();
             for (Doc doc : documentsAll) {
                 String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(doc.getCreationDate());
-                docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate, doc.getSize()));
+                docs.add(new DocDTO(doc.getDocId(), doc.getTitle(), doc.getCategory(), formattedDate,  String.format("%.2f", ((double)doc.getSize()/1024)).toString()));
             }
         }
         model.addAttribute("listaDokumenata", docs);
@@ -570,7 +578,7 @@ public class MainController {
     }
 
     public Model setModelParamAttributesForSearchPage(Model model, Optional<String> paramSearchQuery, Optional<String> paramSearchContent, Optional<String> paramSearchTitle,
-            Optional<String> paramSearchId, Optional<String> paramCategory, String category, Optional<Integer> paramMinSize, Optional<Integer> paramMaxSize,
+            Optional<String> paramSearchId,Optional<String> paramType, String type, Optional<String> paramCategory, String category, Optional<Integer> paramMinSize, Optional<Integer> paramMaxSize,
             Optional<String> paramMinDate, Optional<String> paramMaxDate, Optional<Integer> paramSort) {
 
         if (paramSearchQuery.isPresent()) {
@@ -585,7 +593,15 @@ public class MainController {
         if (paramSearchId.isPresent()) {
             model.addAttribute("searchId", true);
         }
+        if (paramType.isPresent()) {
+            model.addAttribute("type", type);
+        }
         if (paramCategory.isPresent()) {
+            if(category.equals("diplomski") || category.equals("seminarski") ||category.equals("master")){
+            category += " radovi";
+            } else if (category.equals("laboratorijske")){
+                category += " vežbe";
+            }
             model.addAttribute("category", category);
         }
         if (paramMinSize.isPresent()) {
@@ -609,11 +625,11 @@ public class MainController {
     public ArrayList<Category> dodajKategorije() {
         ArrayList<Category> kategorije = new ArrayList<Category>();
         kategorije.add(new Category(0, "knjige"));
-        kategorije.add(new Category(1, "radovi"));
-        kategorije.add(new Category(2, "zahtevi"));
-        kategorije.add(new Category(3, "resenja"));
-        kategorije.add(new Category(4, "molbe"));
-        kategorije.add(new Category(5, "ostalo"));
+        kategorije.add(new Category(1, "laboratorijske vežbe"));
+        kategorije.add(new Category(2, "blanketi"));
+        kategorije.add(new Category(3, "seminarski radovi"));
+        kategorije.add(new Category(4, "diplomski radovi"));
+        kategorije.add(new Category(5, "master radovi"));
         return kategorije;
     }
 
@@ -621,11 +637,19 @@ public class MainController {
         ArrayList<Category> kategorije = new ArrayList<Category>();
         kategorije.add(new Category(0, "sve"));
         kategorije.add(new Category(1, "knjige"));
-        kategorije.add(new Category(2, "radovi"));
-        kategorije.add(new Category(3, "zahtevi"));
-        kategorije.add(new Category(4, "resenja"));
-        kategorije.add(new Category(5, "molbe"));
-        kategorije.add(new Category(6, "ostalo"));
+        kategorije.add(new Category(2, "laboratorijske vežbe"));
+        kategorije.add(new Category(3, "blanketi"));
+        kategorije.add(new Category(4, "seminarski radovi"));
+        kategorije.add(new Category(5, "diplomski radovi"));
+        kategorije.add(new Category(6, "master radovi"));
+        return kategorije;
+    }
+
+      public ArrayList<Category> dodajTipovePretrageZaSearchStranu() {
+        ArrayList<Category> kategorije = new ArrayList<Category>();
+        kategorije.add(new Category(0, "eksplicitna"));
+        kategorije.add(new Category(1, "osnovna"));
+        kategorije.add(new Category(2, "frazna"));
         return kategorije;
     }
 

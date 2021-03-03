@@ -9,6 +9,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <title>Pretraga</title>
         <style>
+
             .pagination {
                 display: inline-block;
             }
@@ -30,11 +31,12 @@
                 background-color: #ddd;
                 border-radius: 5px;
             }
+
         </style>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Elasticsearch</a>
+            <a class="navbar-brand" href="#">Studentski arhiv</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -70,9 +72,16 @@
 
         <div align="center" class="mt-5">
             <form>
-                <div class="form-group">
-                    <div class="form-group col-md-4"  align="left">
-                        <input type="text" name="searchQuery" class="form-control" placeholder="Pretraga" th:value="${searchQuery}" id="searchQuery"/>
+                <div class="form-group  col-md-6">
+                    <div class="form-row d-flex justify-content-center">
+                        <div class="col-md-6"  align="left">
+                            <input type="text" name="searchQuery" class="form-control" placeholder="Pretraga" th:value="${searchQuery}" id="searchQuery"/>
+                        </div>
+                        <div style="padding-top:5px;margin-left: 15px;" id="click">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group col-md-4" >
@@ -97,52 +106,67 @@
                             </label>
                         </div>
                     </div>
-                </div>
-                <div class="form-group col-md-4">
-                    <div class="form-row d-flex justify-content-center">
-                        <div class="col-md-6" >
-                            <label>Kategorija:</label>
-                        </div>
-                        <div class="col-md-6">
-                            <select name="category" class="form-control" id="category">
-                                <option th:each="categ : ${categories}" th:value="${categ.name}" th:text="${categ.name}" th:selected="(${categ.name} == ${category})" ></option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group col-md-4">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <label>Minimalna veličina(B)</label>
-                            <input class="form-control" type="number" name="minSize" min="0" max="15360" th:value="${minSize}" id="minSize"/>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Maximalna veličina(B)</label>
-                            <input class="form-control" type="number" name="maxSize" min="0" max="15360" th:value="${maxSize}" id="maxSize"/>
+
+                    <div class="form-group">
+                        <div class="form-row d-flex justify-content-center">
+                            <div class="col-md-6" >
+                                <label>Vrsta pretrage:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="type" class="form-control" id="type">
+                                    <option th:each="tip : ${types}" th:value="${tip.name}" th:text="${tip.name}" th:selected="(${tip.name} == ${type})" ></option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="form-group col-md-4">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <label>Datum kreiranja (od)</label>
-                            <input type="date" name="minDate" th:value="${minDate}" id="minDate"/>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Datum kreiranja (do)</label>
-                            <input type="date" name="maxDate" th:value="${maxDate}" id="maxDate"/>
+                <div name="Detaljna_pretraga" id="advancedSearch">
+                    <div class="form-group col-md-4">
+                        <div class="form-row d-flex justify-content-center">
+                            <div class="col-md-6" >
+                                <label>Kategorija:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="category" class="form-control" id="category">
+                                    <option th:each="categ : ${categories}" th:value="${categ.name}" th:text="${categ.name}" th:selected="(${categ.name} == ${category})" ></option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group col-md-4">
-                    <div class="form-row d-flex justify-content-center">
-                        <div class="col-md-6" >
-                            <label>Sortitaj po:</label>
+                    <div class="form-group col-md-4">
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label>Minimalna veličina(KB)</label>
+                                <input class="form-control" type="number" name="minSize" min="0" max="15360" th:value="${minSize}" id="minSize"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Maximalna veličina(KB)</label>
+                                <input class="form-control" type="number" name="maxSize" min="0" max="15360" th:value="${maxSize}" id="maxSize"/>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <select name="sort" class="form-control" id="sort">
-                                <option th:each="srt : ${sorts}" th:value="${srt.value}" th:text="${srt.name}" th:selected="(${srt.value} == ${sort})"></option>
-                            </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label>Datum kreiranja (od)</label>
+                                <input type="date" name="minDate" th:value="${minDate}" id="minDate"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Datum kreiranja (do)</label>
+                                <input type="date" name="maxDate" th:value="${maxDate}" id="maxDate"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="form-row d-flex justify-content-center">
+                            <div class="col-md-6" >
+                                <label>Sortitaj po:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="sort" class="form-control" id="sort">
+                                    <option th:each="srt : ${sorts}" th:value="${srt.value}" th:text="${srt.name}" th:selected="(${srt.value} == ${sort})"></option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -162,7 +186,7 @@
                             <th>Naziv dokumenta</th>
                             <th>Kategorija</th>
                             <th>Datum kreiranja</th>
-                            <th>Veličina(B)</th>
+                            <th>Veličina(KB)</th>
                             <th>Sadržaj</th>
                         </tr>
                     </thead>
@@ -188,6 +212,26 @@
                 </div>
             </div>
         </div>
+        <script>
+            var advancedSearchDiv = document.getElementById("advancedSearch");
+            advancedSearchDiv.style.display = 'none'; //default
+
+            document.getElementById('click').onclick = function advancesSerachShowHide() {
+                advancedSearchDiv.style.display = advancedSearchDiv.style.display == 'none' ? 'inline' : 'none';
+            }
+
+        </script>
+        <script type="text/javascript">
+            var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+            (function () {
+                var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+                s1.async = true;
+                s1.src = 'https://embed.tawk.to/5fe90014df060f156a90c1e7/1eqj2gt8g';
+                s1.charset = 'UTF-8';
+                s1.setAttribute('crossorigin', '*');
+                s0.parentNode.insertBefore(s1, s0);
+            })();
+        </script>
         <script type="text/javascript"
         th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
         <script type="text/javascript"

@@ -1,0 +1,114 @@
+
+POCETNA STRANA
+
+
+
+Seminarski i Diplomski Rad
+ 
+SEMINARSKI RAD IZ OBLASTI INTERNETA - WEB
+
+ 
+OSTALI SEMINARSKI RADOVI IZ
+INTERNET - WEBA
+Alati za kreiranje web stranica -seminarski rad
+Antivirusni programi -seminarski rad
+Adobe Photoshop-seminarski rad
+Analiza linkova-seminarski rad
+ASP (Active Server Pages)-seminarski rad
+Blog-pojam bloga-seminarski rad
+Chat -seminarski rad
+Crvi i špijuni (trojanci) -seminarski rad
+Dizajniranje web stranica -seminarski rad
+Društvene mreže-seminarski rad
+E-mail komunikacije-seminarski rad
+Ekstraneti -seminarski rad
+Elektroničko plaćanje pomoću kreditnih kartica-seminarski rad
+Fejsbuk-društveno umrežavanje-seminarski rad
+Fejsbuk kao kulturološki i komunikacijski fenomen-seminarski rad
+Forumi -seminarski rad
+Firewalls-seminarski rad
+Google -seminarski rad
+Google Earth-seminarski rad
+Google Hacking -seminarski rad
+Hakeri-seminarski rad
+HTTP-seminarski rad
+Intranet-seminarski rad
+Internet -seminarski rad
+Internet zavisnost-seminarski rad
+Internet galaksija -seminarski rad
+Internet trgovina -seminarski rad
+Izbjegavanje zagušenja na internetu-seminarski rad
+Izrada sajta u Joomla (Džumli) -seminarski rad
+Izrada UML modela za E-commerce Web sajt-seminarski rad
+JavaScript -seminarski rad
+Mambo CMS -seminarski rad
+Marketing web mesta -seminarski rad
+Metatrazilice -seminarski rad
+Microsoft Exchange server-seminarski rad
+MySQL-seminarski rad
+Obrazovanje pomoću interneta-seminarski rad
+Osnovne usluge (servisi) internet mreze -seminarski rad
+On-line zabava -seminarski rad
+Optimizacija sajtova za pretraživače (SEO)-seminarski rad
+HTML (HyperText Markup Language)-seminarski rad
+Plaćanje putem interneta -seminarski rad
+Pravila ponasanja na internetu -seminarski rad
+Poslovne web aplikacije -seminarski rad
+Pretraživanje interneta -seminarski rad
+Prihvatanje virtualnih prodavnica -seminarski rad
+Privatnost i internet -seminarski rad
+Problem zaštite na internetu-seminarski rad
+Programi za e-učenje -seminarski rad
+Računalne mreže -seminarski rad
+SEO - optimizacija web lokacije-seminarski rad
+Stvaranje dinamickih web stranica -seminarski rad
+Semantički web-seminarski rad
+Skype (Skajp)-seminarski rad
+Upotreba CSSa -seminarski rad
+Upotreba obrazaca na web stranici -seminarski rad
+Uredjaji za pristup internetu-seminarski rad
+Virtualne zajednice-seminarski rad
+Virtualne organizacije-seminarski rad
+Vatreni zidovi (Firewall) -seminarski rad
+Virusi -seminarski rad
+Voice over IP-seminarski rad
+WiMAX -seminarski rad
+WEB 2.0-seminarski rad
+WebCT alat za e-ucenje -seminarski rad
+Web prodaja, tehnologija i modeli -seminarski rad
+Web tržnica -seminarski rad
+Web aukcije -seminarski rad
+World wide web (www) -seminarski rad
+World wide web-seminarski rad
+Yahoo! trazilica -seminarski rad
+YouTube-seminarski rad
+Još...
+Gledaj Filmove Online
+ 
+
+WebCT alat za e-učenje
+1. Uvod: Što su e-alati?
+Što su alati za e-učenje?
+- Programi i podaci korišteni u treningu temeljenom na računalu
+- Edukacijski softver: računalni softver dizajniran za edukaciju
+- Skup medija, knjiga, ilustracija, vrpca i računalnih programa potrebnih za davanje instrukcijskog modula
+
+Trenutno postoji nekoliko različitih definicija alata za e-obrazovanje (eng. courseware tool), no još uvijek ne postoji jedinstvena definicija. Neke od definicija ponuđene na Internetu:
+
+- izvođenje obrazovnog procesa uz pomoć informacijsko-komunikacijske tehnologije
+- Izvor: časopis Edupoint
+
+- Programi i podaci korišteni u treningu temeljenom na računalu.
+- Izvor: The Free On-line Dictionary of Computing
+
+- Edukacijski softver: računalni softver dizajniran za edukaciju. Izraz je dobiven spajanjem pojmova course (tečaj) i software (softver).
+- Izvor: Encarta
+
+- Softver dizajniran za edukacijske namjene
+- Izvor: Ultralingua.Net
+
+- Skup medija, knjiga, ilustracija, vrpca i računalnih programa potrebnih za davanje instrukcijskog modula. Ime implicira da postoji softverska komponenta.
+- Izvor: nepoznat
+
+- Drugi naziv za instrukcijski softver, alat za e-obrazovanje može biti u obliku CD-ROMa, web stranice, diskete, instrukcijskog videozapisa ili programa za učenje. Alati za e-obrazovanje se često koriste za obrazovanje ljudi u korištenju računalnih poslovnih aplikacija, a označava pomoćni materijal u tečajevima korištenja računala.
+- Izvor: NetLingo Classification

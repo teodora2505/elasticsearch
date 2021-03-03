@@ -6,9 +6,9 @@ public class DocDTO {
     private String title;
     private String category;
     private String creationDate;
-    private long size;
+    private String size;
 
-    public DocDTO(String docId, String title, String category, String creationDate, long size) {
+    public DocDTO(String docId, String title, String category, String creationDate, String size) {
         this.docId = docId;
         this.title = title;
         this.category = category;
@@ -36,7 +36,7 @@ public class DocDTO {
         return creationDate;
     }
 
-    public long getSize() {
+    public String getSize() {
         return size;
     }
 
@@ -56,7 +56,7 @@ public class DocDTO {
         this.creationDate = creationDate;
     }
 
-    public void setSize(long size) {
+    public void setSize(String size) {
         this.size = size;
     }
 

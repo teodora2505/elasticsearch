@@ -130,41 +130,80 @@ public class DocDAOImpl implements DocDAO {
     }
 
     public Page<Doc> getPageOfFilteredDocs(int page_number, int page_size, String searchQuery,
-            boolean searchContent, boolean searchTitle, boolean searchId,
+            boolean searchContent, boolean searchTitle, boolean searchId, String searchType,
             String category, long sizeMin, long sizeMax, Date dateMin, Date dateMax,
-            String sortField, boolean ASCorDESC) { //asc-true, desc-false
-
+            String sortField, boolean ASCorDESC) {
+        //ASCorDESC :asc-true, desc-false
+        //searchType: "eksplicitna" | "osnovna" | "frazna"
         Page<Doc> page = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         SortOrder order = (ASCorDESC) ? SortOrder.ASC : SortOrder.DESC;
 
         if (searchQuery != null && (searchContent || searchTitle || searchId)) {
-            if (searchContent && searchTitle && searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"))
-                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-            } else if (searchContent && searchTitle && !searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"));
-            } else if (searchContent && searchId && !searchTitle) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"))
-                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-            } else if (searchTitle && searchId && !searchContent) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"))
-                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-            } else if (searchContent && !searchTitle && !searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"));
-            } else if (searchTitle && !searchContent && !searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"));
-            } else if (searchId && !searchContent && !searchTitle) {
-                boolQuery.should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+            searchQuery = searchQuery.toLowerCase();
+            if (searchType.equals("eksplicitna")) { // trazi striktno uneti jedan termin (termQuery upiti)
+                if (searchContent && searchTitle && searchId) {
+                    boolQuery.should(QueryBuilders.termQuery("content", searchQuery))
+                            .should(QueryBuilders.termQuery("title", searchQuery))
+                            .should(QueryBuilders.termQuery("docId", searchQuery));
+                } else if (searchContent && searchTitle && !searchId) {
+                    boolQuery.should(QueryBuilders.termQuery("content", searchQuery))
+                            .should(QueryBuilders.termQuery("title", searchQuery));
+                } else if (searchContent && searchId && !searchTitle) {
+                    boolQuery.should(QueryBuilders.termQuery("content", searchQuery))
+                            .should(QueryBuilders.termQuery("docId", searchQuery));
+                } else if (searchTitle && searchId && !searchContent) {
+                    boolQuery.should(QueryBuilders.termQuery("title", searchQuery))
+                            .should(QueryBuilders.termQuery("docId", searchQuery));
+                } else if (searchContent && !searchTitle && !searchId) { //sadrzaj
+                    boolQuery.must(QueryBuilders.termQuery("content", searchQuery));
+                } else if (searchTitle && !searchContent && !searchId) { //naslov
+                    boolQuery.must(QueryBuilders.termQuery("title", searchQuery));
+                } else if (searchId && !searchContent && !searchTitle) { //id
+                    boolQuery.must(QueryBuilders.termQuery("docId", searchQuery));
+                }
+            } else if (searchType.equals("osnovna")) { //trazi pojavu vise unetih termina, moze da se javi jedan od njih, vise njih, svi... a moze i da nadje pojavu 1. termina u jednom dokumentu, pojavu 2. termina u 2. dokumentu...
+                if (searchContent && searchTitle && searchId) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title").field("docId"));
+                } else if (searchContent && searchTitle && !searchId) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"));
+                } else if (searchContent && searchId && !searchTitle) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("docId"));
+                } else if (searchTitle && searchId && !searchContent) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("docId").field("title"));
+                } else if (searchContent && !searchTitle && !searchId) { //sadrzaj
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"));
+                } else if (searchTitle && !searchContent && !searchId) { //naslov
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"));
+                } else if (searchId && !searchContent && !searchTitle) { //id
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("docId"));
+                }
+            } else if (searchType.equals("frazna")) { //trazi unetu frazu "veliki grad" nacice "Beograd je veliki grad", ali nece naci "Beograd, veliki je to grad"...
+                if (searchContent && searchTitle && searchId) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("title", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                } else if (searchContent && searchTitle && !searchId) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("title", searchQuery));
+                } else if (searchContent && searchId && !searchTitle) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                } else if (searchTitle && searchId && !searchContent) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("title", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                } else if (searchContent && !searchTitle && !searchId) { //sadrzaj
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery));
+                } else if (searchTitle && !searchContent && !searchId) { //naslov
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("title", searchQuery));
+                } else if (searchId && !searchContent && !searchTitle) { //id
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                }
             }
         }
 
-        boolQuery.must(QueryBuilders.rangeQuery("size").gte(sizeMin))
-                .must(QueryBuilders.rangeQuery("size").lte(sizeMax));
+        boolQuery.must(QueryBuilders.rangeQuery("size").gte(sizeMin * 1024))
+                .must(QueryBuilders.rangeQuery("size").lte(sizeMax * 1024));
 
         if (dateMin != null) {
             boolQuery.must(QueryBuilders.rangeQuery("creationDate").gte(dateMin.getTime()));
@@ -175,7 +214,7 @@ public class DocDAOImpl implements DocDAO {
         }
 
         if (category != null && !category.equals("sve")) {
-            boolQuery.filter(QueryBuilders.termQuery("category", category));
+            boolQuery.filter(QueryBuilders.termQuery("category", category.split("\\s+")[0]));
         }
 
         SearchQuery query;
@@ -194,7 +233,7 @@ public class DocDAOImpl implements DocDAO {
 
     @Override
     public int getTotalNumberOfFilteredDocs(String searchQuery, boolean searchContent,
-            boolean searchTitle, boolean searchId, String category,
+            boolean searchTitle, boolean searchId, String searchType, String category,
             long sizeMin, long sizeMax, Date dateMin, Date dateMax,
             String sortField, boolean ASCorDESC) { //asc-true, desc-false
 
@@ -203,32 +242,70 @@ public class DocDAOImpl implements DocDAO {
         SortOrder order = (ASCorDESC) ? SortOrder.ASC : SortOrder.DESC;
 
         if (searchQuery != null && (searchContent || searchTitle || searchId)) {
-            if (searchContent && searchTitle && searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"))
-                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-            } else if (searchContent && searchTitle && !searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"));
-            } else if (searchContent && searchId && !searchTitle) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"))
-                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-            } else if (searchTitle && searchId && !searchContent) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"))
-                        .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
-            } else if (searchContent && !searchTitle && !searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"));
-            } else if (searchTitle && !searchContent && !searchId) {
-                boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"))
-                        .should(QueryBuilders.wildcardQuery("title", searchQuery + "*"));
-            } else if (searchId && !searchContent && !searchTitle) {
-                boolQuery.should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+            searchQuery = searchQuery.toLowerCase();
+            if (searchType.equals("eksplicitna")) { // trazi striktno uneti jedan termin (termQuery upiti)
+                if (searchContent && searchTitle && searchId) {
+                    boolQuery.should(QueryBuilders.termQuery("content", searchQuery))
+                            .should(QueryBuilders.termQuery("title", searchQuery))
+                            .should(QueryBuilders.termQuery("docId", searchQuery));
+                } else if (searchContent && searchTitle && !searchId) {
+                    boolQuery.should(QueryBuilders.termQuery("content", searchQuery))
+                            .should(QueryBuilders.termQuery("title", searchQuery));
+                } else if (searchContent && searchId && !searchTitle) {
+                    boolQuery.should(QueryBuilders.termQuery("content", searchQuery))
+                            .should(QueryBuilders.termQuery("docId", searchQuery));
+                } else if (searchTitle && searchId && !searchContent) {
+                    boolQuery.should(QueryBuilders.termQuery("title", searchQuery))
+                            .should(QueryBuilders.termQuery("docId", searchQuery));
+                } else if (searchContent && !searchTitle && !searchId) { //sadrzaj
+                    boolQuery.must(QueryBuilders.termQuery("content", searchQuery));
+                } else if (searchTitle && !searchContent && !searchId) { //naslov
+                    boolQuery.must(QueryBuilders.termQuery("title", searchQuery));
+                } else if (searchId && !searchContent && !searchTitle) { //id
+                    boolQuery.must(QueryBuilders.termQuery("docId", searchQuery));
+                }
+            } else if (searchType.equals("osnovna")) { //trazi pojavu vise unetih termina, moze da se javi jedan od njih, vise njih, svi... a moze i da nadje pojavu 1. termina u jednom dokumentu, pojavu 2. termina u 2. dokumentu...
+                if (searchContent && searchTitle && searchId) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title").field("docId"));
+                } else if (searchContent && searchTitle && !searchId) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("title"));
+                } else if (searchContent && searchId && !searchTitle) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content").field("docId"));
+                } else if (searchTitle && searchId && !searchContent) {
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("docId").field("title"));
+                } else if (searchContent && !searchTitle && !searchId) { //sadrzaj
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("content"));
+                } else if (searchTitle && !searchContent && !searchId) { //naslov
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("title"));
+                } else if (searchId && !searchContent && !searchTitle) { //id
+                    boolQuery.should(QueryBuilders.simpleQueryStringQuery(searchQuery).field("docId"));
+                }
+            } else if (searchType.equals("frazna")) { //trazi unetu frazu "veliki grad" nacice "Beograd je veliki grad", ali nece naci "Beograd, veliki je to grad"...
+                if (searchContent && searchTitle && searchId) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("title", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                } else if (searchContent && searchTitle && !searchId) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("title", searchQuery));
+                } else if (searchContent && searchId && !searchTitle) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                } else if (searchTitle && searchId && !searchContent) {
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("title", searchQuery))
+                            .should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                } else if (searchContent && !searchTitle && !searchId) { //sadrzaj
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("content", searchQuery));
+                } else if (searchTitle && !searchContent && !searchId) { //naslov
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("title", searchQuery));
+                } else if (searchId && !searchContent && !searchTitle) { //id
+                    boolQuery.should(QueryBuilders.matchPhraseQuery("docId", searchQuery));
+                }
             }
         }
 
-        boolQuery.must(QueryBuilders.rangeQuery("size").gte(sizeMin))
-                .must(QueryBuilders.rangeQuery("size").lte(sizeMax));
+        boolQuery.must(QueryBuilders.rangeQuery("size").gte(sizeMin * 1024))
+                .must(QueryBuilders.rangeQuery("size").lte(sizeMax * 1024));
 
         if (dateMin != null) {
             boolQuery.must(QueryBuilders.rangeQuery("creationDate").gte(dateMin.getTime()));
@@ -239,7 +316,7 @@ public class DocDAOImpl implements DocDAO {
         }
 
         if (category != null && !category.equals("sve")) {
-            boolQuery.filter(QueryBuilders.termQuery("category", category));
+            boolQuery.filter(QueryBuilders.termQuery("category", category.split("\\s+")[0]));
         }
 
         SearchQuery query;
@@ -272,7 +349,7 @@ public class DocDAOImpl implements DocDAO {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (category != null) {
-            boolQuery.filter(QueryBuilders.termQuery("category", category));
+            boolQuery.filter(QueryBuilders.termQuery("category", category.split("\\s+")[0]));
         }
 
         SearchQuery query = new NativeSearchQueryBuilder().withQuery(boolQuery)

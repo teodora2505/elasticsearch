@@ -1,0 +1,9 @@
+U zavisnosti od vrste dozvole za rad čije se izdavanje traži, razlikuju se sledeći zahtevi:
+
+Zahtev za izdavanje lične radne dozvole
+Zahtev za izdavanje radne dozvole za zapošljavanje
+Zahtev za izdavanje radne dozvole za upućena lica
+Zahtev za izdavanje radne dozvole za kretanje u okviru privrednog društva
+Zahtev za izdavanje radne dozvole za nezavisnog profesionalca
+Zahtev za izdavanje radne dozvole za osposobljavanje i usavršavanje
+Zahtev za izdavanje radne dozvole za samozapošljavanje

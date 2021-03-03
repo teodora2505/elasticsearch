@@ -16,7 +16,7 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Elasticsearch</a>
+            <a class="navbar-brand" href="#">Studentski arhiv</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -73,9 +73,9 @@
                             <ul class="list-group list-group-flush" style="list-style-type:none;">
                                 <div style="margin-top: 20px;">
                                     <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
-                                    <span id="countKnjige" name="${knjige}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                    <span id="c1" name="${c1}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
                                 </div>
-                                <a th:href="@{search/1/(searchQuery='',category='knjige',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>
+                                <a th:href="@{search/1/(searchQuery='',type='eksplicitna',category='knjige',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>
                             </ul>
                         </div>
                     </div>
@@ -83,28 +83,28 @@
                         <div class="card" style="width: 18rem;">
                             <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
                                 <div> <i class="large material-icons">book</i> </div>
-                                <div>&nbsp;&nbsp;Radovi</div>
+                                <div>&nbsp;&nbsp;Laboratorijske vežbe</div>
                             </div>
                             <ul class="list-group list-group-flush" style="list-style-type:none;">
                                 <div style="margin-top: 20px;">
                                     <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
-                                    <span id="countRadovi" name="${radovi}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                    <span id="c2" name="${c2}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
                                 </div>
-                                <a th:href="@{search/1/(searchQuery='',category='radovi',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                                <a th:href="@{search/1/(searchQuery='',type='eksplicitna',category='laboratorijske',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
                         </div>
                     </div>
                     <div class="w-25 p-3" style="margin:60px; margin-top:30px; text-align: center">
                         <div class="card" style="width: 18rem;">
                             <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
                                 <div> <i class="large material-icons">contact_mail</i> </div>
-                                <div>&nbsp;&nbsp;Zahtevi</div>
+                                <div>&nbsp;&nbsp;Blanketi</div>
                             </div>
                             <ul class="list-group list-group-flush" style="list-style-type:none;">
                                 <div style="margin-top: 20px;">
                                     <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
-                                    <span id="countZahtevi" name="${zahtevi}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                    <span id="c3" name="${c3}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
                                 </div>
-                                <a th:href="@{search/1/(searchQuery='',category='zahtevi',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                                <a th:href="@{search/1/(searchQuery='',type='eksplicitna',category='blanketi',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
                         </div>
                     </div>
                 </div>
@@ -115,42 +115,42 @@
                         <div class="card" style="width: 18rem;">
                             <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
                                 <div> <i class="large material-icons">event_note</i> </div>
-                                <div>&nbsp;&nbsp;Rešenja</div>
+                                <div>&nbsp;&nbsp;Seminarski radovi</div>
                             </div>
                             <ul class="list-group list-group-flush" style="list-style-type:none;">
                                 <div style="margin-top: 20px;">
                                     <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
-                                    <span id="countResenja" name="${resenja}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                    <span id="c4" name="${c4}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
                                 </div>
-                                <a th:href="@{search/1/(searchQuery='',category='resenja',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                                <a th:href="@{search/1/(searchQuery='',type='eksplicitna',category='seminarski',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
                         </div>
                     </div>
                     <div class="w-25 p-3" style="margin:60px; margin-top:10px; text-align: center">
                         <div class="card" style="width: 18rem;">
                             <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
                                 <div> <i class="large material-icons">drafts</i> </div>
-                                <div>&nbsp;&nbsp;Molbe</div>
+                                <div>&nbsp;&nbsp;Diplomski radovi</div>
                             </div>
                             <ul class="list-group list-group-flush" style="list-style-type:none;">
                                 <div style="margin-top: 20px;">
                                     <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
-                                    <span id="countMolbe" name="${molbe}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                    <span id="c5" name="${c5}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
                                 </div>
-                                <a th:href="@{search/1/(searchQuery='',category='molbe',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                                <a th:href="@{search/1/(searchQuery='',type='eksplicitna',category='diplomski',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
                         </div>
                     </div>
                     <div class="w-25 p-3" style="margin:60px; margin-top:10px; text-align: center">
                         <div class="card" style="width: 18rem;">
                             <div class="card-header font-weight-bold d-flex flex-row justify-content-center" style="color: #000273;">
                                 <div> <i class="large material-icons">layers</i> </div>
-                                <div>&nbsp;&nbsp;Ostalo</div>
+                                <div>&nbsp;&nbsp;Master radovi</div>
                             </div>
                             <ul class="list-group list-group-flush" style="list-style-type:none;">
                                 <div style="margin-top: 20px;">
                                     <span style="font-size: 15px; color: #000273;">Ukupno:&nbsp;&nbsp;&nbsp;</span>
-                                    <span id="countOstalo" name="${ostalo}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
+                                    <span id="c6" name="${c6}" class="font-weight-bold" style="font-size: 30px; color: #000273;">0</span>
                                 </div>
-                                <a th:href="@{search/1/(searchQuery='',category='ostalo',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
+                                <a th:href="@{search/1/(searchQuery='',type='eksplicitna',category='master',minSize='',maxSize='',minDate='',maxDate='',sort='0')}" class="btn btn-primary" style="margin:40px; margin-top: 20px; margin-bottom: 10px;">Pregledaj</a>                            </ul>
                         </div>
                     </div>
                 </div>
@@ -198,7 +198,7 @@
                             <th>Naziv dokumenta</th>
                             <th>Kategorija</th>
                             <th>Datum kreiranja</th>
-                            <th>Veličina(B)</th>
+                            <th>Veličina(KB)</th>
                             <th>Sadržaj</th>
                         </tr>
                     </thead>
@@ -231,18 +231,12 @@
         <script th:inline="javascript">
             /*<![CDATA[*/
 
-            var knjige = /*[[${knjige}]]*/ 'default';
-            var radovi = /*[[${radovi}]]*/ 'default';
-            var zahtevi = /*[[${zahtevi}]]*/ 'default';
-            var resenja = /*[[${resenja}]]*/ 'default';
-            var molbe = /*[[${molbe}]]*/ 'default';
-            var ostalo = /*[[${ostalo}]]*/ 'default';
-            console.log(knjige);
-            console.log(radovi);
-            console.log(zahtevi);
-            console.log(resenja);
-            console.log(molbe);
-            console.log(ostalo);
+            var c1 = /*[[${c1}]]*/ 'default';
+            var c2 = /*[[${c2}]]*/ 'default';
+            var c3 = /*[[${c3}]]*/ 'default';
+            var c4 = /*[[${c4}]]*/ 'default';
+            var c5 = /*[[${c5}]]*/ 'default';
+            var c6 = /*[[${c6}]]*/ 'default';
             document.addEventListener("DOMContentLoaded", () => {
                 function counter(id, start, end, duration) {
                     let obj = document.getElementById(id),
@@ -258,28 +252,39 @@
                                 }
                             }, step);
                 }
-                if (knjige > 0) {
-                    counter("countKnjige", 0, knjige, 3000);
+                if (c1 > 0) {
+                    counter("c1", 0, c1, 3000);
                 }
-                if (radovi > 0) {
-                    counter("countRadovi", 0, radovi, 3000);
+                if (c2 > 0) {
+                    counter("c2", 0, c2, 3000);
                 }
-                if (zahtevi > 0) {
-                    counter("countZahtevi", 0, zahtevi, 3000);
+                if (c3 > 0) {
+                    counter("c3", 0, c3, 3000);
                 }
-                if (resenja > 0) {
-                    counter("countResenja", 0, resenja, 3000);
+                if (c4 > 0) {
+                    counter("c4", 0, c4, 3000);
                 }
-                if (molbe > 0) {
-                    counter("countMolbe", 0, molbe, 3000);
+                if (c5 > 0) {
+                    counter("c5", 0, c5, 3000);
                 }
-                if (ostalo > 0) {
-                    counter("countOstalo", 0, ostalo, 3000);
+                if (c6 > 0) {
+                    counter("c6", 0, c6, 3000);
                 }
             });
 
 
             /*]]>*/
+        </script>
+        <script type="text/javascript">
+            var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+            (function () {
+                var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+                s1.async = true;
+                s1.src = 'https://embed.tawk.to/5fe90014df060f156a90c1e7/1eqj2gt8g';
+                s1.charset = 'UTF-8';
+                s1.setAttribute('crossorigin', '*');
+                s0.parentNode.insertBefore(s1, s0);
+            })();
         </script>
         <script type="text/javascript"
         th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>

@@ -24,12 +24,12 @@ public interface DocDAO {
     int getTotalNumberOfDocuments();
 
     Page<Doc> getPageOfFilteredDocs(int page_number, int page_size, String searchQuery,
-            boolean searchContent, boolean searchTitle, boolean searchId,
+            boolean searchContent, boolean searchTitle, boolean searchId, String searchType,
             String category, long sizeMin, long sizeMax, Date dateMin, Date dateMax,
             String sortField, boolean ASCorDESC);
 
     int getTotalNumberOfFilteredDocs(String searchQuery,
-            boolean searchContent, boolean searchTitle, boolean searchId,
+            boolean searchContent, boolean searchTitle, boolean searchId, String searchType,
             String category, long sizeMin, long sizeMax, Date dateMin, Date dateMax,
             String sortField, boolean ASCorDESC);
 
